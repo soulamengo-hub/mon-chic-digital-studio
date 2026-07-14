@@ -1,0 +1,11 @@
+MON CHIC PARIS · Digital Studio
+Clean GitHub Release 3.2.1
+
+Build verification:
+- npm ci: successful
+- npm run build: successful
+- Next.js 15.5.7
+- 20 routes generated
+- components/Nav.tsx present and resolved
+
+Verified on 2026-07-14.
