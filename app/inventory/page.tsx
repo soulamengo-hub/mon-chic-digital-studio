@@ -1,2 +1,9 @@
 import AppShell from '@/components/AppShell';
-export default function Page(){return <AppShell><div className="page-header"><div><p className="eyebrow">MON CHIC PARIS</p><h1>Inventory</h1><p>Dieses Modul ist sauber vorbereitet und wird nach dem produktiven Artikelstart ausgebaut.</p></div></div><section className="panel empty-state"><h2>Modul vorbereitet</h2><p>Die Navigation, Gestaltung und technische Basis sind vorhanden. Es entstehen keine KI-Kosten.</p></section></AppShell>}
+import ArticleList from '@/components/ArticleList';
+
+export default function InventoryPage() {
+  return <AppShell>
+    <div className="page-header"><div><p className="eyebrow">LAGER</p><h1>Lagerbestand</h1><p>Alle in Supabase gespeicherten Artikel mit Status, Preis, Kategorie und Produktfoto.</p></div></div>
+    <ArticleList inventoryMode />
+  </AppShell>;
+}

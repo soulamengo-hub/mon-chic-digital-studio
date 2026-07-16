@@ -56,6 +56,7 @@ export default function ArticleCaptureForm() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [progress, setProgress] = useState(0);
+  const [analyzing, setAnalyzing] = useState(false);
 
   const photoCount = useMemo(() => `${photos.length}/9 Fotos`, [photos.length]);
 
@@ -144,6 +145,53 @@ export default function ArticleCaptureForm() {
     if (!metadataResponse.ok) throw new Error(`Bild-Metadaten konnten nicht gespeichert werden: ${await metadataResponse.text()}`);
   }
 
+  async function photoToAnalysisDataUrl(file: File) {
+    const bitmap = await createImageBitmap(file);
+    const maxEdge = 1200;
+    const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('Bild konnte nicht für die Analyse vorbereitet werden.');
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+    return canvas.toDataURL('image/jpeg', 0.78);
+  }
+
+  async function analyzeFirstPhoto() {
+    if (!photos.length) { setMessage('Bitte zuerst mindestens ein Foto aufnehmen.'); return; }
+    setAnalyzing(true); setMessage('');
+    try {
+      const imageDataUrl = await photoToAnalysisDataUrl(photos[0].file);
+      const response = await fetch('/api/ai/analyze', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ imageDataUrl }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'KI-Analyse fehlgeschlagen.');
+      setForm(prev => ({
+        ...prev,
+        brand: result.brand || prev.brand,
+        category: result.category && Object.prototype.hasOwnProperty.call(categories, result.category) ? result.category : prev.category,
+        subcategory: result.subcategory || prev.subcategory,
+        color: result.color || prev.color,
+        secondary_color: result.secondary_color || prev.secondary_color,
+        material: result.material || prev.material,
+        pattern: result.pattern || prev.pattern,
+        condition: result.condition || prev.condition,
+        era: result.era || prev.era,
+        style_key: result.style_key || prev.style_key,
+        occasions: Array.isArray(result.occasions) ? result.occasions : prev.occasions,
+        notes: result.notes ? [prev.notes, `KI-Hinweis: ${result.notes}`].filter(Boolean).join('\n') : prev.notes,
+      }));
+      setMessage('KI-Vorschläge wurden übernommen. Bitte alle Angaben vor dem Speichern prüfen.');
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'KI-Analyse fehlgeschlagen.');
+    } finally {
+      setAnalyzing(false);
+    }
+  }
+
   function removePhoto(index: number) {
     setPhotos(prev => {
       URL.revokeObjectURL(prev[index].preview);
@@ -196,17 +244,25 @@ export default function ArticleCaptureForm() {
   return <form onSubmit={submit} className="capture-form">
     <section className="capture-card photo-section">
       <div className="capture-heading"><div><span className="step-badge">1</span><h2>Fotos aufnehmen</h2></div><span className="photo-count">{photoCount}</span></div>
-      <label className="upload-zone">
-        <CameraIcon />
-        <strong>Fotos aufnehmen oder auswählen</strong>
-        <span>Smartphone-Kamera, Mehrfachauswahl, JPG/PNG/WEBP/HEIC</span>
-        <input type="file" accept="image/*" capture="environment" multiple onChange={e => addFiles(e.target.files)} />
-      </label>
+      <div className="photo-actions">
+        <label className="upload-zone camera-zone">
+          <CameraIcon />
+          <strong>Foto mit Kamera aufnehmen</strong>
+          <span>Nach jeder Aufnahme können Sie direkt das nächste Foto ergänzen.</span>
+          <input type="file" accept="image/*" capture="environment" onChange={e => { addFiles(e.target.files); e.currentTarget.value=''; }} />
+        </label>
+        <label className="upload-zone library-zone">
+          <UploadIcon />
+          <strong>Aus Mediathek auswählen</strong>
+          <span>Mehrfachauswahl, JPG/PNG/WEBP/HEIC, maximal 9 Fotos.</span>
+          <input type="file" accept="image/*" multiple onChange={e => { addFiles(e.target.files); e.currentTarget.value=''; }} />
+        </label>
+      </div>
       {photos.length > 0 && <div className="photo-grid">{photos.map((photo,index)=><article key={photo.preview} className="photo-preview"><img src={photo.preview} alt={`Artikelbild ${index+1}`} /><div><button type="button" onClick={()=>movePhoto(index,-1)} disabled={index===0}>←</button><span>{index+1}</span><button type="button" onClick={()=>movePhoto(index,1)} disabled={index===photos.length-1}>→</button><button type="button" className="remove" onClick={()=>removePhoto(index)}>Löschen</button></div></article>)}</div>}
     </section>
 
     <section className="capture-card">
-      <div className="capture-heading"><div><span className="step-badge">2</span><h2>Artikel-DNA</h2></div><span className="no-ai-badge">Ohne KI-Kosten</span></div>
+      <div className="capture-heading"><div><span className="step-badge">2</span><h2>Artikel-DNA</h2></div><button type="button" className="ai-analysis-button" onClick={analyzeFirstPhoto} disabled={analyzing || !photos.length}>{analyzing ? 'KI analysiert …' : '✦ Foto mit KI analysieren'}</button></div>
       <div className="form-grid">
         <label>Artikelnummer *<div className="sku-row"><input value={form.sku} readOnly aria-label="Automatisch erzeugte Artikelnummer" required /><button type="button" className="secondary-button" onClick={()=>update('sku',generateSku())}>Neu</button></div><small>Wird automatisch erzeugt.</small></label>
         <label>Status<select value={form.status} onChange={e=>update('status',e.target.value)}><option>Entwurf</option><option>Aktiv</option><option>Reserviert</option><option>Verkauft</option></select></label>
@@ -259,7 +315,7 @@ export default function ArticleCaptureForm() {
     </section>
 
     <div className="save-bar">
-      <div><strong>Bereit zum Speichern</strong><span>Bildanalyse und Produkttexte bleiben separate, bewusste KI-Aktionen.</span></div>
+      <div><strong>Bereit zum Speichern</strong><span>KI-Vorschläge sind optional und müssen vor dem Speichern geprüft werden.</span></div>
       <button className="primary-button" type="submit" disabled={saving}><UploadIcon /> {saving ? `Speichern ${progress}%` : 'Artikel speichern'}</button>
     </div>
     {saving && <div className="progress"><span style={{width:`${progress}%`}} /></div>}

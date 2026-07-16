@@ -1,18 +1,19 @@
-# Verifizierungsbericht – Version 6.0.0
+# Verifizierungsbericht – MON CHIC PARIS · Digital Studio 6.2
 
-Prüfdatum: 2026-07-15
+Prüfdatum: 2026-07-16
 
-Tatsächlich ausgeführt:
+## Ausgeführte Prüfungen
 
-- `npm ci --no-audit --no-fund`: erfolgreich
+- `npm ci`: erfolgreich
 - `npm run typecheck`: erfolgreich
 - `npm run build`: erfolgreich
-- Next.js 16.2.10: 15 Seiten/API-Routen erfolgreich erzeugt
+- Next.js 16.2.10 Produktions-Build: erfolgreich
+- 16 Seiten/API-Routen generiert
+- Artikelliste und Lager verwenden dieselbe Supabase-API
+- Produkte und Bilder werden robust in getrennten Abfragen geladen
+- Suche, Statusfilter, Kategoriefilter und manuelles Aktualisieren enthalten
+- Keine nummerierten Dateien, keine Build-Artefakte und keine doppelte Upload-Route
 
-Zusätzlich geprüft:
+## Live-Test
 
-- keine nummerierten `page (x).tsx`- oder `route (x).ts`-Dateien
-- kein `node_modules`, `.next` oder `tsconfig.tsbuildinfo` im Release
-- direkter Browser-Upload zu Supabase bleibt erhalten
-- Artikel-GET-API und reale Artikelliste enthalten
-- automatische Artikelnummer und abhängige Unterkategorien enthalten
+Nach dem Vercel-Deployment `/articles` und `/inventory` öffnen und prüfen, ob die bereits in Supabase vorhandenen Artikel erscheinen.

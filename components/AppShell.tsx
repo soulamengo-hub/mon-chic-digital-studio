@@ -11,6 +11,7 @@ import {
 const items = [
   { href: '/', label: 'Dashboard', icon: HomeIcon },
   { href: '/articles', label: 'Artikel', icon: ArticleIcon },
+  { href: '/showcase', label: 'Schaufenster', icon: SparkIcon },
   { href: '/inventory', label: 'Lager', icon: BoxIcon },
   { href: '/sales', label: 'Verkäufe', icon: CartIcon },
   { href: '/crm', label: 'CRM', icon: UsersIcon },

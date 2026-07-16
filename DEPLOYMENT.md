@@ -1,11 +1,21 @@
-# Deployment – MON CHIC PARIS · Digital Studio 6.0
+# Deployment – MON CHIC PARIS · Digital Studio 6.1
 
 1. ZIP entpacken und den Inhalt in das bestehende GitHub-Repository laden.
-2. Direkt im Root müssen `app`, `components`, `lib`, `public`, `supabase`, `package.json` und `package-lock.json` liegen.
-3. Commit: `Release 6.0 - automatic SKU, catalog and live article list`.
-4. Vercel deployt den neuen Commit automatisch.
-5. Environment Variables unverändert lassen.
-6. Nach dem Deployment prüfen: `/`, `/articles`, `/articles/new`, `/api/health`.
-7. Einen Artikel mit 2–3 Fotos speichern und anschließend in der Artikelliste kontrollieren.
+2. Commit: `Release 6.1 - camera workflow, AI analysis and digital showcase`.
+3. Vercel deployt den Commit automatisch.
+4. Bestehende Supabase-Variablen unverändert lassen.
+5. Für die optionale KI in Vercel zusätzlich `OPENAI_API_KEY` setzen.
+6. Optional `OPENAI_MODEL` setzen; ohne Angabe verwendet die App `gpt-4.1-mini`.
+7. Keine neue SQL-Migration notwendig.
 
-Für eine bereits funktionierende Datenbank aus 5.1.2 ist keine neue SQL-Migration nötig.
+## Prüfung nach Deployment
+
+- `/`
+- `/articles`
+- `/articles/new`
+- `/showcase`
+- `/api/health`
+- Kamera mehrmals nacheinander öffnen und 2–3 Fotos ergänzen
+- Mehrfachauswahl aus der Mediathek testen
+- Artikel mit Status `Aktiv` speichern und im Schaufenster prüfen
+- KI erst nach Einrichtung des API-Keys testen

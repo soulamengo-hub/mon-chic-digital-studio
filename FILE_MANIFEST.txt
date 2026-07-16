@@ -7,9 +7,11 @@ RELEASE_NOTES_5.1.1.md
 RELEASE_NOTES_5.1.2.md
 RELEASE_NOTES_5.1.md
 RELEASE_NOTES_6.0.md
-VERIFICATION_REPORT.md
+RELEASE_NOTES_6.1.md
+RELEASE_NOTES_6.2.md
 app/ai-studio/page.tsx
 app/analytics/page.tsx
+app/api/ai/analyze/route.ts
 app/api/health/route.ts
 app/api/products/route.ts
 app/articles/new/page.tsx
@@ -23,6 +25,7 @@ app/layout.tsx
 app/page.tsx
 app/sales/page.tsx
 app/settings/page.tsx
+app/showcase/page.tsx
 components/AppShell.tsx
 components/ArticleCaptureForm.tsx
 components/ArticleList.tsx

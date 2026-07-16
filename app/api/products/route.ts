@@ -2,16 +2,50 @@ import { NextResponse } from 'next/server';
 import { getSupabaseConfig, supabaseHeaders } from '@/lib/supabase';
 import type { ProductInput } from '@/lib/types';
 
+type ProductRow = Record<string, unknown> & { id: string };
+type ImageRow = { product_id: string; public_url: string; sort_order: number };
 
 export async function GET() {
   try {
     const { url } = getSupabaseConfig();
-    const response = await fetch(`${url}/rest/v1/products?select=*,product_images(public_url,sort_order)&order=created_at.desc&limit=100`, {
-      headers: supabaseHeaders(), cache: 'no-store',
-    });
-    const text = await response.text();
-    if (!response.ok) return new NextResponse(text, { status: response.status });
-    return new NextResponse(text, { headers: { 'Content-Type': 'application/json' } });
+    const headers = supabaseHeaders();
+
+    const productsResponse = await fetch(
+      `${url}/rest/v1/products?select=*&order=created_at.desc&limit=250`,
+      { headers, cache: 'no-store' },
+    );
+    const productsText = await productsResponse.text();
+    if (!productsResponse.ok) return new NextResponse(productsText, { status: productsResponse.status });
+
+    const products = JSON.parse(productsText) as ProductRow[];
+    if (products.length === 0) return NextResponse.json([]);
+
+    const ids = products.map(product => product.id).filter(Boolean);
+    let images: ImageRow[] = [];
+
+    if (ids.length > 0) {
+      const encodedIds = ids.map(id => `"${String(id).replace(/"/g, '')}"`).join(',');
+      const imagesResponse = await fetch(
+        `${url}/rest/v1/product_images?select=product_id,public_url,sort_order&product_id=in.(${encodeURIComponent(encodedIds)})&order=sort_order.asc`,
+        { headers, cache: 'no-store' },
+      );
+      if (imagesResponse.ok) images = (await imagesResponse.json()) as ImageRow[];
+    }
+
+    const imagesByProduct = new Map<string, ImageRow[]>();
+    for (const image of images) {
+      const current = imagesByProduct.get(image.product_id) ?? [];
+      current.push(image);
+      imagesByProduct.set(image.product_id, current);
+    }
+
+    return NextResponse.json(
+      products.map(product => ({
+        ...product,
+        product_images: imagesByProduct.get(product.id) ?? [],
+      })),
+      { headers: { 'Cache-Control': 'no-store, max-age=0' } },
+    );
   } catch (error) {
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Unbekannter Fehler' }, { status: 500 });
   }
