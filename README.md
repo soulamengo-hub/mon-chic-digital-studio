@@ -1,19 +1,19 @@
-# MON CHIC PARIS · Digital Studio 6.2
+# MON CHIC PARIS · Digital Studio 6.3.2
 
-Produktionsfähige Next.js-Anwendung für Smartphone-Fotoaufnahme, Artikel-DNA, Supabase-Artikelliste und Lagerverwaltung.
+Produktionsfähige Next.js-Anwendung mit CI-Navy `#061B49`, automatischer SKU nach Unterkategorie, Artikelbearbeitung, Lagerimport, Verkaufsbuchung und finalem MON CHIC PARIS DIGITAL STUDIO Logo.
 
-## Neu in 6.2
+## Enthalten
+- SKU-Schema `MCP-KL-12345` auf Basis der Unterkategorie
+- zentrale Supabase-Sequenz gegen doppelte laufende Nummern
+- Artikel öffnen, bearbeiten und löschen
+- öffentliche Produkttexte und interne Notizen getrennt
+- Lagerort, Regal und Fach jederzeit änderbar
+- Lagerhistorie und Inventurdatum
+- Excel-/CSV-Import bis 1.000 Zeilen
+- Sales-Modul mit Status „Verkauft“
+- finales Logo unter `public/mon-chic-logo.png`
+- Master-Logo unter `public/mon-chic-logo-master.png`
 
-- zuverlässige Live-Artikelliste aus Supabase
-- robuste getrennte Abfrage von Produkten und Produktbildern
-- Suche und Filter nach Status und Kategorie
-- produktive Lageransicht auf derselben Datenbasis
-- Aktualisieren-Schaltfläche für sofortige Synchronisierung
-
-## Vercel
-
-- Preset: `Next.js`
-- Root Directory: `./`
-- Variablen: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-
-Für eine bereits funktionierende Datenbank aus Version 5.1.2 oder neuer ist keine neue Migration erforderlich.
+## Vor Deployment
+1. `supabase/migration_6_3.sql`
+2. `supabase/migration_6_3_1_storage_history.sql`

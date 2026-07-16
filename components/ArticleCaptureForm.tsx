@@ -14,7 +14,7 @@ type FormState = {
   original_size: string; size_system: string; de_size: string; international_size: string;
   color: string; secondary_color: string; material: string; pattern: string; condition: string;
   era: string; style_key: string; authenticity_status: string; purchase_price: string;
-  sale_price: string; occasions: string[]; measurements: string; flaws: string; notes: string; status: string;
+  sale_price: string; occasions: string[]; measurements: string; flaws: string; notes: string; warehouse_location: string; warehouse_rack: string; warehouse_shelf: string; status: string;
 };
 
 
@@ -37,17 +37,17 @@ const occasionGroups = [
   },
 ] as const;
 
-function generateSku() {
-  const now = new Date();
-  const stamp = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
-  const suffix = `${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}${Math.floor(Math.random()*90+10)}`;
-  return `MCP-${stamp}-${suffix}`;
+async function requestSku(subcategory: string) {
+  const response = await fetch('/api/sku', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ subcategory }) });
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error || 'SKU konnte nicht erzeugt werden.');
+  return String(result.sku);
 }
 
 const initialState: FormState = {
-  sku: generateSku(), brand: '', category: '', subcategory: '', season: 'Ganzjährig', original_size: '', size_system: 'DE',
+  sku: '', brand: '', category: '', subcategory: '', season: 'Ganzjährig', original_size: '', size_system: 'DE',
   de_size: '', international_size: '', color: '', secondary_color: '', material: '', pattern: '', condition: 'Sehr gut',
-  era: '', style_key: '', authenticity_status: 'Zu prüfen', purchase_price: '', sale_price: '', occasions: [], measurements: '', flaws: '', notes: '', status: 'Entwurf'
+  era: '', style_key: '', authenticity_status: 'Zu prüfen', purchase_price: '', sale_price: '', occasions: [], measurements: '', flaws: '', notes: '', warehouse_location: '', warehouse_rack: '', warehouse_shelf: '', status: 'Entwurf'
 };
 
 export default function ArticleCaptureForm() {
@@ -212,7 +212,8 @@ export default function ArticleCaptureForm() {
   async function submit(event: React.FormEvent) {
     event.preventDefault();
     setMessage('');
-    if (!form.sku.trim()) { setMessage('Bitte eine eindeutige SKU eingeben.'); return; }
+    if (!form.subcategory) { setMessage('Bitte zuerst eine Unterkategorie wählen.'); return; }
+    if (!form.sku.trim()) { setMessage('Die automatische SKU fehlt. Bitte Unterkategorie erneut wählen.'); return; }
     setSaving(true); setProgress(5);
     try {
       const payload = {
@@ -230,7 +231,7 @@ export default function ArticleCaptureForm() {
         setProgress(25 + Math.round(((index + 1) / Math.max(1, photos.length)) * 75));
       }
       setMessage(`Artikel ${product.sku} wurde erfolgreich als ${product.status} gespeichert.`);
-      setForm({ ...initialState, sku: generateSku() });
+      setForm({ ...initialState, sku: '' });
       photos.forEach(p => URL.revokeObjectURL(p.preview));
       setPhotos([]);
       setProgress(100);
@@ -264,11 +265,11 @@ export default function ArticleCaptureForm() {
     <section className="capture-card">
       <div className="capture-heading"><div><span className="step-badge">2</span><h2>Artikel-DNA</h2></div><button type="button" className="ai-analysis-button" onClick={analyzeFirstPhoto} disabled={analyzing || !photos.length}>{analyzing ? 'KI analysiert …' : '✦ Foto mit KI analysieren'}</button></div>
       <div className="form-grid">
-        <label>Artikelnummer *<div className="sku-row"><input value={form.sku} readOnly aria-label="Automatisch erzeugte Artikelnummer" required /><button type="button" className="secondary-button" onClick={()=>update('sku',generateSku())}>Neu</button></div><small>Wird automatisch erzeugt.</small></label>
+        <label>Artikelnummer *<input value={form.sku} readOnly aria-label="Automatisch erzeugte Artikelnummer" placeholder="Unterkategorie wählen" required /><small>Schema: MCP-KL-12345. Nach dem Speichern unveränderlich.</small></label>
         <label>Status<select value={form.status} onChange={e=>update('status',e.target.value)}><option>Entwurf</option><option>Aktiv</option><option>Reserviert</option><option>Verkauft</option></select></label>
         <label>Marke / Designer<input list="designer-suggestions" value={form.brand} onChange={e=>update('brand',e.target.value)} /><datalist id="designer-suggestions">{designerSuggestions.map(name=><option key={name} value={name}/>)}</datalist></label>
         <label>Kategorie<select value={form.category} onChange={e=>setForm(prev=>({...prev,category:e.target.value,subcategory:''}))}><option value="">Bitte wählen</option>{Object.keys(categories).map(category=><option key={category}>{category}</option>)}</select></label>
-        <label>Unterkategorie<select value={form.subcategory} onChange={e=>update('subcategory',e.target.value)} disabled={!form.category}><option value="">{form.category ? 'Bitte wählen' : 'Zuerst Kategorie wählen'}</option>{form.category && categories[form.category as CategoryName]?.map(item=><option key={item}>{item}</option>)}</select></label>
+        <label>Unterkategorie *<select value={form.subcategory} onChange={async e=>{const value=e.target.value; setForm(prev=>({...prev,subcategory:value,sku:''})); if(value){try{const sku=await requestSku(value); setForm(prev=>prev.subcategory===value?{...prev,sku}:prev);}catch(error){setMessage(error instanceof Error?error.message:'SKU konnte nicht erzeugt werden.')}}}} disabled={!form.category} required><option value="">{form.category ? 'Bitte wählen' : 'Zuerst Kategorie wählen'}</option>{form.category && categories[form.category as CategoryName]?.map(item=><option key={item}>{item}</option>)}</select></label>
         <label>Saison<select value={form.season} onChange={e=>update('season',e.target.value)}><option>Ganzjährig</option><option>Frühling</option><option>Sommer</option><option>Herbst</option><option>Winter</option></select></label>
         <label>Originalgröße<input value={form.original_size} onChange={e=>update('original_size',e.target.value)} /></label>
         <label>Größensystem<select value={form.size_system} onChange={e=>update('size_system',e.target.value)}><option>DE</option><option>FR</option><option>IT</option><option>UK</option><option>US</option><option>One Size</option></select></label>
@@ -308,6 +309,9 @@ export default function ArticleCaptureForm() {
         </fieldset>
         <label>Einkaufspreis (€)<input type="number" min="0" step="0.01" value={form.purchase_price} onChange={e=>update('purchase_price',e.target.value)} /></label>
         <label>Verkaufspreis (€)<input type="number" min="0" step="0.01" value={form.sale_price} onChange={e=>update('sale_price',e.target.value)} /></label>
+        <label>Lagerort<select value={form.warehouse_location} onChange={e=>update('warehouse_location',e.target.value)}><option value="">Bitte wählen</option><option>Boutique</option><option>Lager A</option><option>Lager B</option><option>Schaufenster</option><option>Fotoshooting</option><option>Versand</option><option>Qualitätsprüfung</option><option>Reinigung</option><option>Retouren</option><option>Extern</option><option>Sonstiges</option></select></label>
+        <label>Regal<input value={form.warehouse_rack} onChange={e=>update('warehouse_rack',e.target.value)} placeholder="z. B. B" /></label>
+        <label>Fach<input value={form.warehouse_shelf} onChange={e=>update('warehouse_shelf',e.target.value)} placeholder="z. B. 14" /></label>
         <label className="full">Maße<textarea value={form.measurements} onChange={e=>update('measurements',e.target.value)} placeholder="Brustweite, Länge, Schulter, Ärmel …" /></label>
         <label className="full">Besonderheiten / Mängel<textarea value={form.flaws} onChange={e=>update('flaws',e.target.value)} /></label>
         <label className="full">Notizen<textarea value={form.notes} onChange={e=>update('notes',e.target.value)} /></label>

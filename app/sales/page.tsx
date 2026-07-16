@@ -1,2 +1,2 @@
-import AppShell from '@/components/AppShell';
-export default function Page(){return <AppShell><div className="page-header"><div><p className="eyebrow">MON CHIC PARIS</p><h1>Sales</h1><p>Dieses Modul ist sauber vorbereitet und wird nach dem produktiven Artikelstart ausgebaut.</p></div></div><section className="panel empty-state"><h2>Modul vorbereitet</h2><p>Die Navigation, Gestaltung und technische Basis sind vorhanden. Es entstehen keine KI-Kosten.</p></section></AppShell>}
+import AppShell from '@/components/AppShell';import SalesManager from '@/components/SalesManager';
+export default function Page(){return <AppShell><div className="page-header"><div><p className="eyebrow">SALES</p><h1>Verkäufe</h1><p>Verkäufe erfassen und Artikel automatisch auf „Verkauft“ setzen.</p></div></div><SalesManager/></AppShell>}

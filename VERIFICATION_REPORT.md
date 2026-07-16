@@ -1,19 +1,25 @@
-# Verifizierungsbericht – MON CHIC PARIS · Digital Studio 6.2
+# Verifizierungsbericht – MON CHIC PARIS · Digital Studio 6.3.2
 
 Prüfdatum: 2026-07-16
 
-## Ausgeführte Prüfungen
-
+## Ausgeführt
 - `npm ci`: erfolgreich
 - `npm run typecheck`: erfolgreich
 - `npm run build`: erfolgreich
-- Next.js 16.2.10 Produktions-Build: erfolgreich
-- 16 Seiten/API-Routen generiert
-- Artikelliste und Lager verwenden dieselbe Supabase-API
-- Produkte und Bilder werden robust in getrennten Abfragen geladen
-- Suche, Statusfilter, Kategoriefilter und manuelles Aktualisieren enthalten
-- Keine nummerierten Dateien, keine Build-Artefakte und keine doppelte Upload-Route
+- Next.js 16.2.10: erfolgreich
+- 18 Seiten/API-Routen generiert
 
-## Live-Test
+## Logo
+- finales Logo eingebunden
+- quadratische Masterdatei vorhanden
+- optimierte App-Datei vorhanden
+- Darstellung über `object-fit: contain` und festes 1:1-Seitenverhältnis
+- keine Verzerrung
 
-Nach dem Vercel-Deployment `/articles` und `/inventory` öffnen und prüfen, ob die bereits in Supabase vorhandenen Artikel erscheinen.
+## Bestehende Kernfunktionen
+- SKU nach Unterkategorie, z. B. `MCP-KL-12345`
+- Artikel öffnen, bearbeiten und löschen
+- Lagerort, Regal und Fach änderbar
+- Lagerhistorie und Inventurdatum
+- Excel-/CSV-Import
+- Verkaufsbuchung
