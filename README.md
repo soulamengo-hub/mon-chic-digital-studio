@@ -1,11 +1,28 @@
-# MON CHIC PARIS · Digital Studio
+# MON CHIC PARIS · Digital Studio 6.0
 
-Fashion · Creativity · Innovation
+Produktionsfähige Next.js-Anwendung für Smartphone-Fotoaufnahme, Artikel-DNA und Supabase-Workflows.
 
-Release 3.2 verbindet die freigegebene App-Gestaltung mit Release 3.1A/3.1B für Smartphone-Fotos und Artikel-DNA. Fotoaufnahme, Datenpflege, Berechnungen und Speicherung laufen ohne KI. KI-Funktionen bleiben getrennte, bewusst ausgelöste Aktionen.
+## Neu in 6.0
 
-## Test
+- automatische Artikelnummer bei jeder neuen Erfassung
+- Hauptkategorien mit passenden Unterkategorien
+- Designer-Vorschlagsliste mit weiterhin freier Eingabe
+- echte Artikelliste aus Supabase mit Foto, Status, Preis und Anlässen
+- CI-Blau näher am MON-CHIC-Logo (`#2B286F`)
+- direkter Upload von bis zu 9 Fotos zu Supabase Storage
 
-1. Supabase-Migration `supabase/migration_3_1_photo_article_dna.sql` ausführen.
-2. Vercel-Variablen `NEXT_PUBLIC_SUPABASE_URL` und `NEXT_PUBLIC_SUPABASE_ANON_KEY` prüfen.
-3. Nach Deployment `/products/new` auf dem Smartphone öffnen.
+## Start
+
+```bash
+npm ci
+cp .env.example .env.local
+npm run dev
+```
+
+## Vercel
+
+- Preset: `Next.js`
+- Root Directory: `./`
+- Variablen: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+Die bestehende Supabase-Datenbank aus Version 5.1.2 benötigt für 6.0 keine neue Migration.

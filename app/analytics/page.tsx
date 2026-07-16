@@ -1,8 +1,2 @@
-import { WorkspacePage } from '../../components/workspace/WorkspacePage';
-export default function AnalyticsPage() {
-  return <WorkspacePage kicker="MON CHIC PARIS" title="Analytics" intro="Umsatz, Gewinn, Lager, Trends, Designer-Level, Stil und Saison analysieren." items={[
-    { icon:'↗', title:'Business Intelligence', text:'Kennzahlen und Bestandsauswertung öffnen.', href:'/business-intelligence' },
-    { icon:'⌁', title:'Trend Hunter', text:'Trends und saisonale Chancen analysieren.', href:'/trend-hunter' },
-    { icon:'€', title:'Finanzen', text:'Ausgaben und Gewinnentwicklung prüfen.', href:'/accounting' },
-  ]}/>;
-}
+import AppShell from '@/components/AppShell';
+export default function Page(){return <AppShell><div className="page-header"><div><p className="eyebrow">MON CHIC PARIS</p><h1>Analytics</h1><p>Dieses Modul ist sauber vorbereitet und wird nach dem produktiven Artikelstart ausgebaut.</p></div></div><section className="panel empty-state"><h2>Modul vorbereitet</h2><p>Die Navigation, Gestaltung und technische Basis sind vorhanden. Es entstehen keine KI-Kosten.</p></section></AppShell>}

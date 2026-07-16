@@ -1,8 +1,2 @@
-import { WorkspacePage } from '../../components/workspace/WorkspacePage';
-export default function AIStudioPage() {
-  return <WorkspacePage kicker="MON CHIC PARIS" title="KI Studio" intro="KI-gestützte Aufnahme, Bilderkennung, Produkttexte und Übersetzungen." items={[
-    { icon:'⌁', title:'KI-Aufnahme', text:'Fotos aufnehmen und Produktdaten vorbereiten.', href:'/product-capture' },
-    { icon:'✦', title:'Produktanalyse', text:'Kategorie, Farbe, Material und Stil vorschlagen.', href:'/product-capture' },
-    { icon:'T', title:'Texte & SEO', text:'Titel, Beschreibung und Keywords erzeugen.', href:'/content-studio' },
-  ]}/>;
-}
+import AppShell from '@/components/AppShell';
+export default function Page(){return <AppShell><div className="page-header"><div><p className="eyebrow">MON CHIC PARIS</p><h1>Ai studio</h1><p>Dieses Modul ist sauber vorbereitet und wird nach dem produktiven Artikelstart ausgebaut.</p></div></div><section className="panel empty-state"><h2>Modul vorbereitet</h2><p>Die Navigation, Gestaltung und technische Basis sind vorhanden. Es entstehen keine KI-Kosten.</p></section></AppShell>}

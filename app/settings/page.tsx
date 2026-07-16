@@ -1,8 +1,2 @@
-import { WorkspacePage } from '../../components/workspace/WorkspacePage';
-export default function SettingsPage() {
-  return <WorkspacePage kicker="MON CHIC PARIS" title="Einstellungen" intro="Benutzer, Sprachen, KI, Supabase, OpenAI, Etiketten, QR-Code und Backup." items={[
-    { icon:'⚙', title:'Systemstatus', text:'Vercel, Supabase und spätere KI-Verbindungen prüfen.', href:'/settings' },
-    { icon:'⌑', title:'Etiketten & QR-Code', text:'Druckformat und Scan-Funktionen vorbereiten.', href:'/labels' },
-    { icon:'DE', title:'Sprachen', text:'Deutsch, Englisch und Französisch verwalten.', href:'/settings' },
-  ]}/>;
-}
+import AppShell from '@/components/AppShell';
+export default function Page(){return <AppShell><div className="page-header"><div><p className="eyebrow">MON CHIC PARIS</p><h1>Settings</h1><p>Dieses Modul ist sauber vorbereitet und wird nach dem produktiven Artikelstart ausgebaut.</p></div></div><section className="panel empty-state"><h2>Modul vorbereitet</h2><p>Die Navigation, Gestaltung und technische Basis sind vorhanden. Es entstehen keine KI-Kosten.</p></section></AppShell>}
